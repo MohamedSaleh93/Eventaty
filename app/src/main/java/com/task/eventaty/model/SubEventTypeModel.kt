@@ -7,6 +7,13 @@ import com.google.gson.annotations.SerializedName
  */
 class SubEventTypeModel {
 
+    companion object {
+        enum class EVENT_TYPE_IN_LIST {
+            MESSAGE,
+            LOADING
+        }
+    }
+
     var longitude: Double = 0.0
     var latitude: Double = 0.0
     @SerializedName("end_date")
@@ -17,4 +24,5 @@ class SubEventTypeModel {
     lateinit var coverImageUrl: String
     lateinit var name: String
     lateinit var id: String
+    var eventTypeInList: EVENT_TYPE_IN_LIST = EVENT_TYPE_IN_LIST.MESSAGE
 }

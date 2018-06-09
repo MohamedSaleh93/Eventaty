@@ -1,6 +1,7 @@
 package com.task.eventaty.network
 
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.reflect.KClass
@@ -10,11 +11,20 @@ import kotlin.reflect.KClass
  */
 class NetworkCallsHandler {
 
-    val httpClient = OkHttpClient.Builder()
+    private fun getHttpClient(): OkHttpClient {
+        val httpClient = OkHttpClient.Builder()
+        //TODO handle based on currently defined build variants
+//        if (BuildConfig.DEBUG) {
+        val logging = HttpLoggingInterceptor()
+        logging.level = HttpLoggingInterceptor.Level.BODY // BASIC
+        httpClient.addInterceptor(logging)
+//        }
+        return httpClient.build()
+    }
 
     val retrofitBuilder = Retrofit.Builder().baseUrl(NetworkConstants.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-    val retrofit = retrofitBuilder.client(httpClient.build()).build()
+    val retrofit = retrofitBuilder.client(getHttpClient()).build()
 
     fun <T: Any> createService(clazz: KClass<T>): T {
         return retrofit.create(clazz.java)

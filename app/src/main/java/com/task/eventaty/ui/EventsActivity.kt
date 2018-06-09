@@ -26,6 +26,11 @@ class EventsActivity: AppCompatActivity() {
 
         tabLayout.getTabAt(0)?.select()
 
+        fragmentManager.beginTransaction().
+                replace(R.id.fragmentsContainer,
+                        EventsTabsFragment.getFragmentObject
+                        (eventsList.get(0))).commit()
+
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab?) {
 

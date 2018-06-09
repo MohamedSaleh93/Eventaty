@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.squareup.picasso.Picasso
 import com.task.eventaty.R
 import com.task.eventaty.model.SubEventTypeModel
 import kotlinx.android.synthetic.main.events_items_list.view.*
@@ -15,10 +16,16 @@ import kotlinx.android.synthetic.main.events_items_list.view.*
 class EventsItemsAdapter(val eventsItems: ArrayList<SubEventTypeModel>?,
                          val context: Context) : RecyclerView.Adapter<EventsItemsAdapter.CustomViewHolder>() {
 
+    private val MESSAGE_TYPE = 1
+    private val LOADING_TYPE = 2
+
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): EventsItemsAdapter.CustomViewHolder{
-        val view = LayoutInflater.from(context).inflate(R.layout.events_items_list, parent, false)
-        return CustomViewHolder(view)
+        return if (viewType == MESSAGE_TYPE)
+        CustomViewHolder(LayoutInflater.from(context).inflate(R.layout.events_items_list, parent, false))
+        else
+            CustomViewHolder(LayoutInflater.from(context).
+                    inflate(R.layout.load_more_item, parent, false))
     }
 
     override fun getItemCount(): Int {
@@ -30,15 +37,24 @@ class EventsItemsAdapter(val eventsItems: ArrayList<SubEventTypeModel>?,
     }
 
     override fun onBindViewHolder(holder: EventsItemsAdapter.CustomViewHolder?, position: Int) {
-        holder?.bindEventItem(eventsItems?.get(position))
+        if (eventsItems?.get(position)?.eventTypeInList == SubEventTypeModel.Companion.EVENT_TYPE_IN_LIST.MESSAGE) {
+            holder?.bindEventItem(eventsItems?.get(position))
+        }
     }
 
     class CustomViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
         fun bindEventItem(eventItem: SubEventTypeModel?) {
-         //   Glide.with(itemView.context).load(eventItem?.coverImageUrl).into(itemView.eventItemImage)
+            Picasso.with(itemView.context).load(eventItem?.coverImageUrl).into(itemView.eventItemImage)
             itemView.eventItemName.text = eventItem?.name
             itemView.eventItemDate.text = eventItem?.startDate
         }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (eventsItems?.get(position)?.eventTypeInList ==
+                SubEventTypeModel.Companion.EVENT_TYPE_IN_LIST.MESSAGE) MESSAGE_TYPE
+        else
+            LOADING_TYPE
     }
 }
