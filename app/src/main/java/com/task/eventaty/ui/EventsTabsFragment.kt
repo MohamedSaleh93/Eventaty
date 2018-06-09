@@ -1,0 +1,61 @@
+package com.task.eventaty.ui
+
+import android.app.Fragment
+import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.RelativeLayout
+import com.task.eventaty.R
+import com.task.eventaty.`interface`.EventsTypeView
+import com.task.eventaty.adapter.EventsItemsAdapter
+import com.task.eventaty.model.EventTypeModel
+import com.task.eventaty.model.SubEventTypeModel
+import com.task.eventaty.presenter.EventsTabFragmentPresenterImp
+import com.task.eventaty.utils.Constants
+import kotlinx.android.synthetic.main.fragment_events.*
+
+/**
+ * @author Mohamed Saleh on 6/7/2018.
+ */
+class EventsTabsFragment(): Fragment(), EventsTypeView {
+
+    companion object {
+        fun getFragmentObject(eventItem: EventTypeModel): EventsTabsFragment {
+            val eventTabFragment = EventsTabsFragment()
+            val args = Bundle()
+            args.putParcelable(Constants.EVENT_ITEM_KEY, eventItem)
+            eventTabFragment.arguments = args
+            return eventTabFragment
+        }
+    }
+
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater?.inflate(R.layout.fragment_events, container, false)
+        return view
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val eventItem: EventTypeModel = arguments.getParcelable(Constants.EVENT_ITEM_KEY)
+        val eventTabPresenter = EventsTabFragmentPresenterImp(this)
+        eventTabPresenter.loadEventsTypes(eventItem.eventName, 1)
+    }
+
+    override fun onEventsLoadedSuccessfully(eventsItems: ArrayList<SubEventTypeModel>?) {
+        loadingProgressBar.visibility = View.GONE
+        eventsItemsRecyclerView.visibility = View.VISIBLE
+        val eventsListAdapter = EventsItemsAdapter(eventsItems, activity)
+        val layoutManager = LinearLayoutManager(activity)
+        eventsItemsRecyclerView.layoutManager = layoutManager
+        eventsItemsRecyclerView.adapter = eventsListAdapter
+    }
+
+    override fun onEventsLoadedFailed() {
+        loadingProgressBar.visibility = View.GONE
+        eventsItemsRecyclerView.visibility = View.GONE
+        errorMessage.visibility = View.VISIBLE
+    }
+
+}
